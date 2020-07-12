@@ -23,9 +23,9 @@ function BreadthFirstSearch(options)
     }
 }
 
-BreadthFirstSearch.prototype.PathFinder = function(startX, startY, endX, endY, graph)
+BreadthFirstSearch.prototype.pathFinder = function(startX, startY, endX, endY, graph)
 {
-    graph.resetTraversal();
+    //graph.resetTraversal();
 
     var openList = [],
         start = graph.getNodeAt(startX, startY),
@@ -41,9 +41,11 @@ BreadthFirstSearch.prototype.PathFinder = function(startX, startY, endX, endY, g
         var node = openList.shift();
             //box = graph.getBox(node.y, node.x);
 
-        if (end === node)
+        if (end.x == node.x && end.y == node.y)
         {
-            return Path.traceFromEnd(end);
+            var p = new Path();
+            p.traceFromEnd(end);
+            return(p.path);
         }
 
         else
@@ -58,7 +60,7 @@ BreadthFirstSearch.prototype.PathFinder = function(startX, startY, endX, endY, g
             {
                 neighbors[i].isVisited = true;
                 openList.push(neighbors[i]);
-                neighbors[i].setParent(node);
+                neighbors[i].parent = node;
             }
         }
     }

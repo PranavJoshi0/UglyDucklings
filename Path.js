@@ -1,23 +1,24 @@
-function Path()
+class Path
 {
-    this.path = [];
-}
-    
-Path.prototype.traceFromEnd = function(end)
-{
-    this.path = [];
-
-    var node = end;
-    
-    path.push([end.x, end.y]);
-
-    while (node.parent)
+    constructor()
     {
-        node = node.parent;
-        path.push([node.x, node.y]);
+        this.path = [];
     }
     
-    return path.reverse();
-};
+    traceFromEnd(end)
+    {
+        var path = [],
+            node = end;
     
+        path.push([end.x, end.y]);
+
+        while (node.parent)
+        {
+            node = node.parent;
+            path.push([node.x, node.y]);
+        }
+    
+        this.path = path.reverse();
+    }
+};
 //module.exports = Path;

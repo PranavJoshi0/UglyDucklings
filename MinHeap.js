@@ -5,59 +5,75 @@ class MinHeap
         this.elements = [];
     }
 
-    insert(f, x, y)
+    insert(elem)
     {
-        this.elements.push({f : f, coord : [x,y]});
+        this.elements.push(elem);
+        this.bubbleUp(this.elements.length - 1); 
+    }
 
-        if(this.elements.length > 1)
+    bubbleUp(index)
+    {
+        while (index > 0)
         {
-            var current = this.elements.length - 1,
-                temp = this.elements[current];
-            while(current >= 0)
+            //console.log(index);
+            //console.log("........");
+            //console.log(this.elements.length);
+            // get the parent
+            var parent = Math.floor((index + 1) / 2) - 1;
+            
+            // if parent is greater than child
+            if (this.elements[parent].f > this.elements[index].f)
             {
-                var parentIdx = Math.floor((current - 1) / 2.0);
-                if(temp.f < this.elements[parentIdx].f)
-                {
-                    this.elements[current] = this.elements[parentIdx];
-                    this.elements[parentIdx] = temp;
-                    current = parentIdx;
-                }
-                else
-                {
-                    break;
-                }
+              // swap
+              var temp = this.elements[parent];
+              this.elements[parent] = this.elements[index];
+              this.elements[index] = temp;
             }
+            
+            index = parent;
         }
     }
 
-    getMin()
+    /*getMin()
     {
         return(this.elements[0]);
-    }
+    }*/
 
     popMin()
     {
         var min = this.elements[0],
             l = this.elements.length,
-            i = 0,
-            j = 1;
+            index = 0;
 
         this.elements[0] = this.elements[l - 1];
+        this.elements[l - 1] = min;
+        min = this.elements.pop();
 
-        while(j < l - 1)
+        while(true)
         {
-            if(this.elements[j].f > this.elements[j + 1].f)
+            var child = 2 * (index + 1), swap;
+
+            if(this.elements[child] == null && this.elements[child - 1] == null)
             {
-                j++;
+                break;
+            }
+
+            else if(this.elements[child] == null || this.elements[child].f > this.elements[child - 1].f)
+            {
+                swap = child - 1;
+            }
+
+            else
+            {
+                swap = child;
             }
             
-            if(this.elements[i].f > this.elements[j].f)
+            if(this.elements[index].f > this.elements[swap].f)
             {
-                var temp = this.elements[i];
-                this.elements[i] = this.elements[j];
-                this.elements[j] = temp;
-                i = j;
-                j = 2 * j + 1;
+                var temp = this.elements[index];
+                this.elements[index] = this.elements[swap];
+                this.elements[swap] = temp;
+                index = swap;
             }
             else
             {
@@ -65,7 +81,7 @@ class MinHeap
             }
         }
 
-        return(this.elements.pop());
+        return(min);
     }
 
     isEmpty()
@@ -84,30 +100,37 @@ class MinHeap
                this.elements[i].f > fNew)
             {
                 this.elements[i].f = fNew;
+                this.bubbleUp(i);
                 break;
-            }
-        }
-
-        if(this.elements.length > 1)
-        {
-            var current = i,
-                temp = this.elements[current];
-            while(current >= 0)
-            {
-                var parentIdx = Math.floor((current - 1) / 2.0);
-                if(temp.f < this.elements[parentIdx].f)
-                {
-                    this.elements[current] = this.elements[parentIdx];
-                    this.elements[parentIdx] = temp;
-                    current = parentIdx;
-                }
-                else
-                {
-                    break;
-                }
             }
         }
     }
 };
+
+/*
+openList = new MinHeap();
+openList.insert({f: 0, coord: [4,5]});
+openList.insert({f: 1, coord: [4,3]});
+
+openList.insert({f: 5, coord: [2,5]});
+openList.insert({f: 3, coord: [3,5]});
+openList.insert({f: 8, coord: [6,5]});
+openList.insert({f: 4, coord: [4,8]});
+openList.insert({f: 2, coord: [4,9]});
+console.log(openList);
+console.log(openList.popMin());
+console.log(openList);
+console.log(openList.popMin());
+console.log(openList);
+console.log(openList.popMin());
+console.log(openList);
+console.log(openList.popMin());
+console.log(openList);
+console.log(openList.popMin());
+console.log(openList);
+console.log(openList.popMin());
+console.log(openList);
+console.log(openList.popMin());
+console.log(openList);*/
 
 //module.exports = MinHeap;

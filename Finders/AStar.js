@@ -39,17 +39,21 @@ pathFinder(startX, startY, endX, endY, graph, algo = 'a-star', color = true)
         end = graph.getNodeAt(endX, endY),
         diagOption = this.diagonalOption,
         heuristic = this.heuristic,
-        closedList = new Array(graph.rowCount),
+        closedList = [],
         openList = new MinHeap();
 
     for(var i = 0; i < graph.rowCount; ++i)
     {
-        closedList[i] = new Array(graph.columnCount);
+        var temp = [];//closedList[i] = new Array(graph.columnCount);
         for(var j = 0; j < graph.columnCount; ++j)
         {
-            closedList[i][j] = false;
+            temp.push(false);//closedList[i][j] = false;
         }
+        //console.log(temp);
+        closedList.push(temp);
     }
+
+    //console.log(closedList);
 
     //initializing f, g, h for the start node
     openList.insert({f : 0, coord : [startX, startY]});
@@ -66,17 +70,22 @@ pathFinder(startX, startY, endX, endY, graph, algo = 'a-star', color = true)
             neighbors = graph.getNeighbors(currentX, currentY, diagOption),
             neighbor, i, gNew, hNew, fNew;
 
-        closedList[currentY][currentX] = true;
+        console.log("MinPopped");
+        console.log(minElement);
 
-        if(currentNode === end)
-        {
-            foundDest = true;
-            return (Path.traceFromEnd(end))
-        }
+        closedList[currentY][currentX] = true;
 
         for(i = 0; i < neighbors.length; ++i)
         {
             neighbor = neighbors[i];
+
+            if(neighbor.x == end.x && neighbor.y == end.y)
+            {
+                neighbor.parent = currentNode;
+                var p = new Path();
+                p.traceFromEnd(end);
+                return(p.path);
+            }
 
             var isDiag = false;
 
@@ -89,8 +98,20 @@ pathFinder(startX, startY, endX, endY, graph, algo = 'a-star', color = true)
             {
                 var val = (neighbor.weight + currentNode.weight) / 2.0;
                 gNew = algo === 'best-first-search' ? 0 : currentNode.g + (isDiag ? Math.SQRT2 * val : val);
-                hNew = algo === 'dijkstra' ? 0 : heuristic(Math.abs(currentX - neighbor.x), Math.abs(currentY - neighbor.y));
+                hNew = algo === 'dijkstra' ? 0 : heuristic(Math.abs(end.x - neighbor.x), Math.abs(end.y - neighbor.y));
                 fNew = gNew + hNew;
+
+                if(neighbor.isVisited)
+                {    
+                    if(neighbor.g > gNew)
+                    {
+                        openList.decreaseKey(fNew, neighbor.x, neighbor.y);
+                        neighbor.f = fNew;
+                        neighbor.g = gNew;
+                        neighbor.h = hNew;
+                        neighbor.parent = currentNode;
+                    }
+                }
 
                 if(!neighbor.isVisited)
                 {
@@ -101,15 +122,6 @@ pathFinder(startX, startY, endX, endY, graph, algo = 'a-star', color = true)
                     {
                         neighbor.setAsTraversed();
                     }
-                    neighbor.f = fNew;
-                    neighbor.g = gNew;
-                    neighbor.h = hNew;
-                    neighbor.parent = currentNode;
-                }
-
-                else if(neighbor.f > fNew)
-                {
-                    openList.decreaseKey(fNew, neighbor.x, neighbor.y);
                     neighbor.f = fNew;
                     neighbor.g = gNew;
                     neighbor.h = hNew;

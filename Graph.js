@@ -15,16 +15,19 @@ class Graph {
     this.isProcessed = false;
   }
 
-  createGrid(matrix) {
-    var gridOfNodes = new Array(this.rowCount);
+  createGrid(matrix = undefined) {
+    
+    var gridOfNodes = []; //new Array(this.rowCount);
 
     var i, j;
 
     for (i = 0; i < this.rowCount; i++) {
-      gridOfNodes[i] = new Array(this.columnCount);
+      var temp = [];
+      //gridOfNodes[i] = new Array(this.columnCount);
       for (j = 0; j < this.columnCount; j++) {
-        gridOfNodes[i][j] = new this.nodeCls(j, i, 1);
+        temp.push(new this.nodeCls(j, i, 1));//gridOfNodes[i][j] = new this.nodeCls(j, i, 1);
       }
+      gridOfNodes.push(temp);
     }
 
     if (matrix === undefined) {
@@ -89,23 +92,17 @@ class Graph {
     }
   }
 
-  /*resetTraversal() {
-    var i, j;
-
-    for (i = 0; i < rowCount; i++) {
-      for (j = 0; j < columnCount; j++) {
-        this.gridOfNodes[i][j].resetVisit();
-      }
-    }
-  }*/
-
   getNodeAt(x, y) {
+    /*console.log("Nee Pooo");
+    console.log(this.gridOfNodes.length);
+    console.log(x);
+    console.log(y);*/
     return this.gridOfNodes[y][x];
   }
 
   getNeighbors(x, y, diagOption) {
     //neighbours => array of Node
-    var neighbours = new Set();
+    var neighbours = [];
     var N = false,
       NW = false,
       W = false,
@@ -117,25 +114,25 @@ class Graph {
 
     // ↑ N
     if (this.isOnGrid(x, y - 1) && this.isWalkable(x, y - 1)) {
-      neighbours.add(this.gridOfNodes[y - 1][x]);
+      neighbours.push(this.gridOfNodes[y - 1][x]);
       N = true;
     }
 
     // → W
     if (this.isOnGrid(x + 1, y) && this.isWalkable(x + 1, y)) {
-      neighbours.add(this.gridOfNodes[y][x + 1]);
+      neighbours.push(this.gridOfNodes[y][x + 1]);
       W = true;
     }
 
     // ↓ S
     if (this.isOnGrid(x, y + 1) && this.isWalkable(x, y + 1)) {
-      neighbours.add(this.gridOfNodes[y + 1][x]);
+      neighbours.push(this.gridOfNodes[y + 1][x]);
       S = true;
     }
 
     // ← E
     if (this.isOnGrid(x - 1, y) && this.isWalkable(x - 1, y)) {
-      neighbours.add(this.gridOfNodes[y][x - 1]);
+      neighbours.push(this.gridOfNodes[y][x - 1]);
       E = true;
     }
 
@@ -163,22 +160,22 @@ class Graph {
 
     // ↗
     if (NW && this.isWalkable(x + 1, y - 1)) {
-      neighbours.add(this.gridOfNodes[y - 1][x + 1]);
+      neighbours.push(this.gridOfNodes[y - 1][x + 1]);
     }
 
     // ↘
     if (SW && this.isWalkable(x + 1, y + 1)) {
-      neighbours.add(this.gridOfNodes[y + 1][x + 1]);
+      neighbours.push(this.gridOfNodes[y + 1][x + 1]);
     }
 
     // ↖
     if (NE && this.isWalkable(x - 1, y - 1)) {
-      neighbours.add(this.gridOfNodes[y - 1][x - 1]);
+      neighbours.push(this.gridOfNodes[y - 1][x - 1]);
     }
 
     // ↙
     if (SE && this.isWalkable(x - 1, y + 1)) {
-      neighbours.add(this.gridOfNodes[y + 1][x - 1]);
+      neighbours.push(this.gridOfNodes[y + 1][x - 1]);
     }
 
     return neighbours;

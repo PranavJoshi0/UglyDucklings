@@ -87,7 +87,7 @@ class Runner
                     
                 else
                 {*/
-                    finder = new states.Runners['aStar']({
+                    this.finder = new states.Runners['aStar']({
                         allowDiagonal: allowDiagonal,
                         dontCrossCorners: dontCrossCorners,
                         heuristic: this.Heuristic[heuristic],
@@ -114,7 +114,7 @@ class Runner
                 // Any non-negative integer, indicates "forever".
                 timeLimit = (timeLimit <= 0 || isNaN(timeLimit)) ? -1 : timeLimit;*/
 
-                finder = new states.Runners['idaStar']({
+                this.finder = new states.Runners['idaStar']({
                     /*timeLimit: timeLimit,
                     trackRecursion: trackRecursion,*/
                     allowDiagonal: allowDiagonal,
@@ -145,7 +145,7 @@ class Runner
                     
                 else
                 {*/
-                    finder = new states.Runners['bfs']({
+                    this.finder = new states.Runners['bfs']({
                         allowDiagonal: allowDiagonal,
                         dontCrossCorners: dontCrossCorners
                     });
@@ -172,7 +172,7 @@ class Runner
                 // Any non-negative integer, indicates "forever".
                 timeLimit = (timeLimit <= 0 || isNaN(timeLimit)) ? -1 : timeLimit;*/
 
-                finder = new states.Runners['idDepthFirst']({
+                this.finder = new states.Runners['idDepthFirst']({
                     /*timeLimit: timeLimit,
                     trackRecursion: trackRecursion,*/
                     allowDiagonal: allowDiagonal,
@@ -207,7 +207,7 @@ class Runner
                     
                 else
                 {*/
-                    finder = new states.Runners['bestFirst']({
+                    this.finder = new states.Runners['bestFirst']({
                         allowDiagonal: allowDiagonal,
                         dontCrossCorners: dontCrossCorners,
                         heuristic: this.Heuristic[heuristic]
@@ -237,7 +237,7 @@ class Runner
                     
                 else
                 {*/
-                    finder = new states.Runners['dijkstra']({
+                    this.finder = new states.Runners['dijkstra']({
                         allowDiagonal: allowDiagonal,
                         dontCrossCorners: dontCrossCorners
                     });
@@ -293,7 +293,7 @@ class Runner
                 // Any non-negative integer, indicates "forever".
                 //timeLimit = (timeLimit <= 0 || isNaN(timeLimit)) ? -1 : timeLimit;*/
   
-                finder = new states.Runners['multiStop']({
+                this.finder = new states.Runners['multiStop']({
                     /*timeLimit: timeLimit,*/
                     allowDiagonal: allowDiagonal,
                     dontCrossCorners: dontCrossCorners,
@@ -305,7 +305,6 @@ class Runner
 
                 break;
         }
-        this.finder = finder;
     }
 
     mapPath(path)
@@ -326,13 +325,13 @@ class Runner
         var start = this.grid.startNode,
             end = this.grid.endNode,
             path = [];
+
+        //console.log(this.grid.graph.gridOfNodes);
         
-        if(this.finder instanceof AStar ||
-           this.finder instanceof Dijkstra ||
-           this.finder instanceof BestFirstSearch)
+        if(this.finder instanceof AStar)
         {
-            var algoName = this.finder instanceof BestFirstSearch ? 'best-first-search' :
-                           (this.finder instanceof Dijkstra ? 'dijkstra' : 'a-star');
+            var algoName = this.finderName === "Best First Search" ? 'best-first-search' :
+                           (this.finderName === "Dijkstra" ? 'dijkstra' : 'a-star');
             path = this.finder.pathFinder(start.x, start.y, end.x, end.y, this.grid.graph, algoName, true);
         }
 
@@ -363,8 +362,8 @@ class Runner
             this.fixedRecall();
             return;
         }
-        this.__speed != null ? 
-            (this.timer = setTimeout(() => this.recall(), this.__speed)) : null;
+        /*this.__speed != null ? 
+            (this.timer = setTimeout(() => this.recall(), this.__speed)) : null;*/
     }
 
     init()
@@ -375,10 +374,10 @@ class Runner
         this.onStop = this.onRunnerStop();
         this.finish = false;
         this.onStart ? this.onStart() : null;
-        this.firstFrame();
+        //this.firstFrame();
     
         this.__speed != null ? 
-            (this.timer = setTimeout(() => recall(), this.__speed)) : null;
+            (this.timer = setTimeout(() => this.recall(), this.__speed)) : null;
         this.__startTime = new Date().getTime();
     }
     
@@ -407,12 +406,13 @@ class Runner
                 this.onStop ? this.onStop() : null;
             }
         }, this.__speed);
+
     }
 
-    firstFrame()
+    /*firstFrame()
     {
         
-    }
+    }*/
 
     fixedFrames()
     {
@@ -420,7 +420,7 @@ class Runner
         node.setAsPath();
     }
 
-    perfromAction(r, c)
+    perform(r, c)
     {
         var box = this.grid.getBox(r, c);
     
@@ -469,21 +469,22 @@ class Runner
 
     addEvents(box, r, c)
     {
-        var self = this.grid;
+        var grid = this.grid,
+            self = this;
         box.path.onMouseEnter = function(e) {
-            if (self.__dragEnabled)
+            if (grid.__dragEnabled)
             {
-                this.perfromAction(r, c);
+                self.perform(r, c);
             }
         };
     
         box.path.onMouseDown = function(event) {
             event.preventDefault();
-            self.__dragEnabled = true;
-            this.perfromAction(r, c);
+            grid.__dragEnabled = true;
+            self.perform(r, c);
         };
         box.path.onMouseUp = function(event) {
-            self.__dragEnabled = false;
+            grid.__dragEnabled = false;
         };
     }
 
@@ -507,10 +508,10 @@ class Runner
         }
     
         //this.grid.setRunner(states.DEFAULT_RUNNER_CODE);
-        this.finder = new AStar({
+        this.finder = new IDDepthFirstSearch({
             allowDiagonal: true,
             dontCrossCorners: false,
-            heuristic: this.Heuristic.Manhattan(),
+            /*heuristic: this.Heuristic.Octile()*/
         });
     }
 

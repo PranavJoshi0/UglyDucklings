@@ -37,9 +37,9 @@ function IDAStar(options)
     }
 }
 
-IDAStar.prototype.PathFinder = function(startX, startY, endX, endY, graph)
+IDAStar.prototype.pathFinder = function(startX, startY, endX, endY, graph)
 {
-    graph.resetTraversal();
+    //graph.resetTraversal();
     /*
         haven't implemented time limit
     */

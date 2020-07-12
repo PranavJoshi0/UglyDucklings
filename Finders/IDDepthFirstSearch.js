@@ -13,112 +13,118 @@ asymptotically optimal among brute force searches in both space and time.
 //var Heuristic = require('./Heuristic');
 //var Path = require('./Path');
 
-function IDDepthFirstSearch(options)
+class IDDepthFirstSearch
 {
-    options = options || {};
-
-    if(!options.allowDiagonal)
+    constructor(options)
     {
-        this.diagonalOption = DiagonalOptions.Never;
+        options = options || {};
+
+        if(!options.allowDiagonal)
+        {
+            this.diagonalOption = DiagonalOptions.Never;
+        }
+
+        else if(options.dontCrossCorners)
+        {
+            this.diagonalOption = DiagonalOptions.noNeighborBlocked;
+        }
+
+        else
+        {
+            this.diagonalOption = DiagonalOptions.oneNeighborBlocked;
+        }
     }
 
-    else if(options.dontCrossCorners)
+    DLS(start, end, graph, depthLimit, diagOption)
     {
-        this.diagonalOption = DiagonalOptions.noNeighborBlocked;
-    }
+        //var box = activeGrid.getBox(start.y, start.x);
 
-    else
-    {
-        this.diagonalOption = DiagonalOptions.oneNeighborBlocked;
-    }
-}
+        //start.isVisited = true;
 
-IDDepthFirstSearch.prototype.DLS = function(start, end, graph, depthLimit, diagOption)
-{
-    //var box = activeGrid.getBox(start.y, start.x);
+        if(start === end)
+        {
+            return true;
+        }
 
-    //start.isVisited = true;
+        else
+        {
+            start.setAsTraversed();
+        }
 
-    if(start === end)
-    {
-        return true;
-    }
+        if(depthLimit <= 0)
+        {
+            return false;
+        }
 
-    else
-    {
-        start.setAsTraversed();
-    }
+        var neighbors = graph.getNeighbors(start.x, start.y, diagOption), i;
 
-    if(depthLimit <= 0)
-    {
+        for(i = 0; i < neighbors.length; i++)
+        {
+            var neighbor = neighbors[i],
+                isDiag = false;
+        
+            if(neighbor.x !== start.x && neighbor.y !== start.y)
+            {
+                isDiag = true;
+            }
+        
+            var val = (neighbor.weight + start.weight) / 2.0,
+                newDist = start.dist + isDiag ? Math.SQRT2 * val : val;
+
+            if(neighbor.isVisited && newDist < neighbor.dist)
+            {
+                neighbor.parent = start;
+                neighbor.dist = newDist;
+                neighbor.isVisited = false;
+            }
+        
+            if(!neighbor.isVisited)
+            {
+                neighbor.parent = start;
+                neighbor.dist = newDist;
+
+                if(this.DLS(neighbor, end, graph, depthLimit - 1, diagOption) === true)
+                {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
-    var neighbors = graph.getNeighbors(start.x, start.y, diagOption), i;
-
-    for(i = 0; i < neighbors.length; i++)
+    pathFinder(startX, startY, endX, endY, activeGrid)
     {
-        var neighbor = neighbors[i],
-            isDiag = false;
-        
-        if(neighbor.x !== start.x && neighbor.y !== start.y)
-        {
-            isDiag = true;
-        }
-        
-        var val = (neighbor.weight + start.weight) / 2.0,
-            newDist = start.dist + isDiag ? Math.SQRT2 * val : val;
+        var graph = activeGrid.graph,
+            start = graph.getNodeAt(startX, startY),
+            end = graph.getNodeAt(endX, endY),
+            diagOption = this.diagonalOption,
+            depth = diagOption === DiagonalOptions.Never ? 
+                    Heuristic.Manhattan(Math.abs(startX - endX), Math.abs(startY - endY)) : 
+                    Heuristic.Octile(Math.abs(startX - endX), Math.abs(startY -  endY)),
+            maxDepth = graph.rowCount * graph.columnCount,
+            foundDest = false;
 
-        if(neighbor.isVisited && newDist < neighbor.dist)
+        for (;depth <= maxDepth; depth++) 
         {
-            neighbor.parent = start;
-            neighbor.dist = newDist;
-            neighbor.isVisited = false;
-        }
-        
-        if(!neighbor.isVisited)
-        {
-            neighbor.parent = start;
-            neighbor.dist = newDist;
-
-            if(DLS(neighbor, end, graph, depthLimit - 1, diagOption) === true)
+            activeGrid.resetTraversal();
+            if (this.DLS(start, end, graph, depth, diagOption) === true)
             {
-                return true;
+                foundDest = true;
+                break;
             }
-        }
-    }
-    return false;
-};
-
-IDDepthFirstSearch.prototype.pathFinder = function(startX, startY, endX, endY, activeGrid)
-{
-    var graph = activeGrid.graph,
-        start = graph.getNodeAt(startX, startY),
-        end = graph.getNodeAt(endX, endY),
-        depth = this.diagonalOption === DiagonalOptions.Never ? 
-                Heuristic.Manhattan(Math.abs(startX - endX), Math.abs(startY - endY)) : 
-                Heuristic.Octile(Math.abs(startX - endX), Math.abs(startY -  endY)),
-        maxDepth = graph.rowCount * graph.columnCount,
-        foundDest = false;
-
-    for (;depth <= maxDepth; depth++) 
-    {
-        activeGrid.resetTraversal();
-        if (DLS(start, end, graph, depth, diagOption) === true)
-        {
-            foundDest = true;
-            break;
-        }
-    } 
+        }    
   
-    if(foundDest === true)
-    {
-        return (Path.traceFromEnd(end))
-    }
+        if(foundDest === true)
+        {
+            var p = new Path();
+            p.traceFromEnd(end);
+            return(p.path);
+        }
 
-    else
-    {
-        return [];
+        else
+        {
+            return [];
+        }
     }
 };
 
