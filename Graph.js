@@ -85,8 +85,8 @@ class Graph {
   resetDefault() {
     var i, j;
 
-    for (i = 0; i < rowCount; i++) {
-      for (j = 0; j < columnCount; j++) {
+    for (i = 0; i < this.rowCount; i++) {
+      for (j = 0; j < this.columnCount; j++) {
         this.gridOfNodes[i][j].resetToDefault();
       }
     }

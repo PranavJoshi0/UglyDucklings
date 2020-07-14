@@ -8,7 +8,7 @@ class Runner
         this.path = [];
         this.timer = null;
         this.fixedTimer = null;
-        this.finish = null;
+        this.FREE = true;
         this.count = 0;
         this.__speed = 0; // 0 = Max Speed
         this.onStop = null;
@@ -47,35 +47,44 @@ class Runner
         };
     }
 
-    getAlgo(algo)
+    resetStartEnd()
     {
-        //var algo = event.target.dataset["algo"];
-        //var extraData = event.target.dataset;
-        /*algo = $(
-            '#algorithm_panel ' +
-            '.ui-accordion-header[aria-expanded=true]'
-        ).attr('id');*/
-        var allowDiagonal = true,
-                dontCrossCorners = true,
-                heuristic = Heuristic['Manhattan'],
-                maxCost = 0;
+        this.grid.__start_node = this.grid.getBox(this.grid.startNode.y, this.grid.startNode.x);
+        this.grid.setStart();
+        this.grid.__end_node = this.grid.getBox(this.grid.endNode.y, this.grid.endNode.x);
+        this.grid.setEnd();
+    }
+
+    setDefaultStartEnd()
+    {
+        this.grid.__start_node = this.grid.getBox(states.DEFAULT_POS.START_Y, states.DEFAULT_POS.START_X);
+        this.grid.setStart();
+        this.grid.__end_node = this.grid.getBox(states.DEFAULT_POS.END_Y, states.DEFAULT_POS.END_X);
+        this.grid.setEnd();
+    }
+
+    getAlgo()
+    {
+        const algo = $('a[aria-expanded="true"]').data("algo");
+
+        var allowDiagonal, dontCrossCorners, heuristic, biDirectional, maxCost = 0;
               
         switch (algo)
         {
             case 'aStar':
-                /*allowDiagonal = typeof $('#astar_section ' +
+                allowDiagonal = typeof $('#a_star_list ' +
                                          '.allow_diagonal:checked').val() !== 'undefined';
-                biDirectional = typeof $('#astar_section ' +
+                biDirectional = typeof $('#a_star_list ' +
                                          '.bi-directional:checked').val() !=='undefined';
-                dontCrossCorners = typeof $('#astar_section ' +
+                dontCrossCorners = typeof $('#a_star_list ' +
                                          '.dont_cross_corners:checked').val() !=='undefined';
 
-                 parseInt returns NaN (which is falsy) if the string can't be parsed
+                /* parseInt returns NaN (which is falsy) if the string can't be parsed
                 weight = parseInt($('#astar_section .spinner').val()) || 1;
-                weight = weight >= 1 ? weight : 1; if negative or 0, use 1 
+                weight = weight >= 1 ? weight : 1; if negative or 0, use 1 */
 
-                heuristic = $('input[name=astar_heuristic]:checked').val();*/
-                /*if (biDirectional)
+                heuristic = $('input[name=a_star_heuristic]:checked').val();
+                if (biDirectional)
                 {
                     finder = new states.Runners['biAStar']({
                         allowDiagonal: allowDiagonal,
@@ -86,27 +95,27 @@ class Runner
                 }
                     
                 else
-                {*/
+                {
                     this.finder = new states.Runners['aStar']({
                         allowDiagonal: allowDiagonal,
                         dontCrossCorners: dontCrossCorners,
                         heuristic: this.Heuristic[heuristic],
                     });
                     this.finderName = "A-Star";
-                //}
+                }
                 break;
 
-            case 'idaStar':
-                /*allowDiagonal = typeof $('#ida_section ' +
+            case 'idAStar':
+                allowDiagonal = typeof $('#ida_star_list ' +
                                          '.allow_diagonal:checked').val() !== 'undefined';
-                dontCrossCorners = typeof $('#ida_section ' +
+                dontCrossCorners = typeof $('#ida_star_list ' +
                                          '.dont_cross_corners:checked').val() !=='undefined';
-                trackRecursion = typeof $('#ida_section ' +
-                                         '.track_recursion:checked').val() !== 'undefined';
+                /*trackRecursion = typeof $('#ida_star_list ' +
+                                         '.track_recursion:checked').val() !== 'undefined';*/
 
                 heuristic = $('input[name=jump_point_heuristic]:checked').val();
 
-                weight = parseInt($('#ida_section input[name=astar_weight]').val()) || 1;
+                /*weight = parseInt($('#ida_section input[name=astar_weight]').val()) || 1;
                 weight = weight >= 1 ? weight : 1; if negative or 0, use 1 
 
                 timeLimit = parseInt($('#ida_section input[name=time_limit]').val());
@@ -114,7 +123,7 @@ class Runner
                 // Any non-negative integer, indicates "forever".
                 timeLimit = (timeLimit <= 0 || isNaN(timeLimit)) ? -1 : timeLimit;*/
 
-                this.finder = new states.Runners['idaStar']({
+                this.finder = new states.Runners['idAStar']({
                     /*timeLimit: timeLimit,
                     trackRecursion: trackRecursion,*/
                     allowDiagonal: allowDiagonal,
@@ -127,11 +136,11 @@ class Runner
                 break;
 
             case 'bfs':
-                /*allowDiagonal = typeof $('#breadthfirst_section ' +
+                allowDiagonal = typeof $('#bfs_list ' +
                                          '.allow_diagonal:checked').val() !== 'undefined';
-                biDirectional = typeof $('#breadthfirst_section ' +
+                biDirectional = typeof $('#bfs_list ' +
                                          '.bi-directional:checked').val() !== 'undefined';
-                dontCrossCorners = typeof $('#breadthfirst_section ' +
+                dontCrossCorners = typeof $('#bfs_list ' +
                                          '.dont_cross_corners:checked').val() !=='undefined';
                 if (biDirectional)
                 {
@@ -144,27 +153,27 @@ class Runner
                 }
                     
                 else
-                {*/
+                {
                     this.finder = new states.Runners['bfs']({
                         allowDiagonal: allowDiagonal,
                         dontCrossCorners: dontCrossCorners
                     });
 
                     this.finderName = "Breadth First Search";
-                //}
+                }
                 break;
 
             case 'idDepthFirst':
-                /*allowDiagonal = typeof $('#iddepth_first_section ' +
+                allowDiagonal = typeof $('#iddfs_list ' +
                                          '.allow_diagonal:checked').val() !== 'undefined';
-                dontCrossCorners = typeof $('#iddepth_first_section ' +
+                dontCrossCorners = typeof $('#iddfs_list ' +
                                          '.dont_cross_corners:checked').val() !=='undefined';
-                trackRecursion = typeof $('#iddepth_first_section ' +
-                                         '.track_recursion:checked').val() !== 'undefined';
+                /*trackRecursion = typeof $('#iddfs_list ' +
+                                         '.track_recursion:checked').val() !== 'undefined';*/
 
                 heuristic = $('input[name=jump_point_heuristic]:checked').val();
 
-                weight = parseInt($('#iddepth_first_section input[name=astar_weight]').val()) || 1;
+                /*weight = parseInt($('#iddepth_first_section input[name=astar_weight]').val()) || 1;
                 weight = weight >= 1 ? weight : 1; if negative or 0, use 1 
 
                 timeLimit = parseInt($('#iddepth_first_section input[name=time_limit]').val());
@@ -185,11 +194,11 @@ class Runner
                 break;
 
             case 'bestFirst':
-                /*allowDiagonal = typeof $('#bestfirst_section ' +
+                allowDiagonal = typeof $('#best_first_list ' +
                                          '.allow_diagonal:checked').val() !== 'undefined';
-                biDirectional = typeof $('#bestfirst_section ' +
+                biDirectional = typeof $('#best_first_list ' +
                                          '.bi-directional:checked').val() !== 'undefined';
-                dontCrossCorners = typeof $('#bestfirst_section ' +
+                dontCrossCorners = typeof $('#best_first_list ' +
                                          '.dont_cross_corners:checked').val() !=='undefined';
             
                 heuristic = $('input[name=bestfirst_heuristic]:checked').val();
@@ -206,7 +215,7 @@ class Runner
                 }
                     
                 else
-                {*/
+                {
                     this.finder = new states.Runners['bestFirst']({
                         allowDiagonal: allowDiagonal,
                         dontCrossCorners: dontCrossCorners,
@@ -214,18 +223,18 @@ class Runner
                     });
 
                     this.finderName = "Best First Search";
-                //}
+                }
                 break;
 
             case 'dijkstra':
-                /*allowDiagonal = typeof $('#dijkstra_section ' +
+                allowDiagonal = typeof $('#dijkstra_list ' +
                                          '.allow_diagonal:checked').val() !== 'undefined';
-                biDirectional = typeof $('#dijkstra_section ' +
+                biDirectional = typeof $('#dijkstra_list ' +
                                          '.bi-directional:checked').val() !=='undefined';
-                dontCrossCorners = typeof $('#dijkstra_section ' +
+                dontCrossCorners = typeof $('#dijkstra_list ' +
                                          '.dont_cross_corners:checked').val() !=='undefined';
                   
-                /*if (biDirectional)
+                if (biDirectional)
                 {
                     finder = new states.Runners['biDijkstra']({
                         allowDiagonal: allowDiagonal,
@@ -236,14 +245,14 @@ class Runner
                 }
                     
                 else
-                {*/
+                {
                     this.finder = new states.Runners['dijkstra']({
                         allowDiagonal: allowDiagonal,
                         dontCrossCorners: dontCrossCorners
                     });
 
                     this.finderName = "Dijkstra";
-                //}
+                }
                 break;
 
             /*case 'jps':
@@ -278,17 +287,17 @@ class Runner
                 break;*/
           
             case 'multiStop':
-                /*allowDiagonal = typeof $('#multiple_stops_section ' +
+                allowDiagonal = typeof $('#multi_stop_list ' +
                                          '.allow_diagonal:checked').val() !== 'undefined';
-                dontCrossCorners = typeof $('#multiple_stops_section ' +
+                dontCrossCorners = typeof $('#multi_stop_list ' +
                                          '.dont_cross_corners:checked').val() !=='undefined';
                     
                 heuristic = $('input[name=multistop_heuristic]:checked').val();
 
-                maxCost = parseInt($('#multiple_stops_section input[name=max_cost]').val()) || Infinity;
+                maxCost = parseInt($('#multi_stop_list input[name=max_cost]').val()) || Infinity;
                 maxCost = maxCost >= 0 ? maxCost : Infinity;
 
-                //timeLimit = parseInt($('#multiple_stops_section input[name=time_limit]').val());
+                //timeLimit = parseInt($('#multi_stop_list input[name=time_limit]').val());
 
                 // Any non-negative integer, indicates "forever".
                 //timeLimit = (timeLimit <= 0 || isNaN(timeLimit)) ? -1 : timeLimit;*/
@@ -305,6 +314,8 @@ class Runner
 
                 break;
         }
+
+        //console.log("allowDiagonal" + allowDiagonal + " dontCrossCorners" + dontCrossCorners + " heuristic" + heuristic + " biDirectional" + biDirectional);
     }
 
     mapPath(path)
@@ -322,11 +333,10 @@ class Runner
 
     runAlgo()
     {
+        console.log("Running..."+this.finderName);
         var start = this.grid.startNode,
             end = this.grid.endNode,
             path = [];
-
-        //console.log(this.grid.graph.gridOfNodes);
         
         if(this.finder instanceof AStar)
         {
@@ -351,34 +361,21 @@ class Runner
         }
         this.done();
         this.mapPath(path);
-    }
-
-    recall()
-    {
-        this.onFrame ? this.onFrame() : null;
-        this.runAlgo();
-        if (this.finish)
-        {
-            this.fixedRecall();
-            return;
-        }
-        /*this.__speed != null ? 
-            (this.timer = setTimeout(() => this.recall(), this.__speed)) : null;*/
+        this.resetStartEnd();
     }
 
     init()
     {
-        this.grid.resetTraversal();
         this.grid.fixGrid();
-        this.onStart = this.onRunnerStart();
         this.onStop = this.onRunnerStop();
-        this.finish = false;
-        this.onStart ? this.onStart() : null;
-        //this.firstFrame();
-    
-        this.__speed != null ? 
-            (this.timer = setTimeout(() => this.recall(), this.__speed)) : null;
+        this.FREE = false;
         this.__startTime = new Date().getTime();
+        this.runAlgo();
+        if (this.FREE)
+        {
+            this.fixedRecall();
+            return;
+        }
     }
     
     fixedRecall()
@@ -391,11 +388,13 @@ class Runner
         var i = this.count > states.MAX_FIXED_FRAME_COUNT ? 
             states.MAX_FIXED_FRAME_COUNT : 
             this.count;
+        this.path.shift();
         
         this.fixedTimer = setInterval(() => {
-            if (i > 0)
+            if (i > 1)
             {
-                this.fixedFrames();
+                var node = this.path.shift();
+                node.setAsPath();
                 i--;
             }
             
@@ -406,24 +405,24 @@ class Runner
                 this.onStop ? this.onStop() : null;
             }
         }, this.__speed);
-
-    }
-
-    /*firstFrame()
-    {
-        
-    }*/
-
-    fixedFrames()
-    {
-        var node = this.path.shift();
-        node.setAsPath();
     }
 
     perform(r, c)
     {
         var box = this.grid.getBox(r, c);
-    
+
+        if(box == this.grid.startNode)
+        {
+            this.resetGrid();
+            this.grid.actionMode = states.TOOL_MODE.START_NODE;
+        }
+
+        else if(box == this.grid.endNode)
+        {
+            this.resetGrid();
+            this.grid.actionMode = states.TOOL_MODE.TARGET_NODE;
+        }
+
         if (!this.running) {
             switch (this.grid.__action_mode)
             {
@@ -507,49 +506,55 @@ class Runner
             }
         }
     
-        //this.grid.setRunner(states.DEFAULT_RUNNER_CODE);
-        this.finder = new IDDepthFirstSearch({
+        this.finder = new AStar({
             allowDiagonal: true,
             dontCrossCorners: false,
-            /*heuristic: this.Heuristic.Octile()*/
+            heuristic: this.Heuristic.Octile()
         });
+
+        this.setDefaultStartEnd();
+    }
+
+    resetGrid()
+    {
+        if(this.FREE)
+        {
+            this.grid.resetTraversal();
+            const sn = this.grid.startNode;
+            const en = this.grid.endNode;
+            sn ? sn.resetText() : null;
+            en ? en.resetText() : null;
+            this.resetStartEnd();
+        }
     }
 
     clearGrid()
     {
-        this.grid.__start_node = null;
-        this.grid.__end_node = null;
-        this.grid.__wallA = null;
-        this.grid.__wallB = null;
-        this.grid.onStartEndSet();
-        this ? this.stop() : null;
-    
-        setTimeout(() => {
+        if(this.FREE)
+        {
             this.grid.graph.resetDefault();
             for (var r = 0; r < this.grid.graph.rowCount; r++)
             {
                 for (var c = 0; c < this.grid.graph.columnCount; c++)
                 {
+                if(this.grid.graph.gridOfNodes[r][c].nodeType !== states.BOX_TYPES.START_NODE ||
+                    this.grid.graph.gridOfNodes[r][c].nodeType !== states.BOX_TYPES.END_NODE)
                     this.grid.setClear(r, c);
                 }
             }
-        }, 300);
+            states.Context.Runner.setDefaultStartEnd();
+        }
     }
-    
-    nextStep()
-    {
-        if (!this.finish) this.recall();
-    }
-    
+
     resume()
     {
-        this.finish = false;
+        this.FREE = false;
         this.recall();
     }
     
     done()
     {
-        this.finish = true;
+        this.FREE = true;
         this.stop();
     }
     
@@ -558,7 +563,7 @@ class Runner
         clearTimeout(this.timer);
         this.timer = null;
         this.__endTime = new Date().getTime();
-        // this.onStop ? this.onStop() : null;
+        this.onStop ? this.onStop() : null;
     }
 
     set speed(speed)
@@ -578,8 +583,6 @@ class Runner
     
     get duration()
     {
-        return this.finish ? this.__endTime - this.__startTime : 0;
+        return this.FREE ? this.__endTime - this.__startTime : 0;
     }
 };
-
-//module.exports = Runner;

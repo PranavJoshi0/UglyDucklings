@@ -1,8 +1,4 @@
-//var Graph = require('./Graph');
-//var Grid = require('./Grid');
-//var Runner = require('./Runner');
-//var Utils = require('./utilities');
-//var Grid = require('./Grid');
+
 function processGrid(rowCount, columnCount, width, height, boxSize) {
   project.clear();
   const graph = new Graph(rowCount, columnCount, Box);
@@ -17,97 +13,61 @@ function processGrid(rowCount, columnCount, width, height, boxSize) {
       states.Context.ActiveGrid.startNode != null &&
       states.Context.ActiveGrid.endNode != null
     ) {
-      states.actionPanel.removeClass("d-none");
-    } else {
-      states.actionPanel.addClass("d-none");
-    }
+      states.randomWallGenerator.prop("disabled", true);
+      }
   };
 
   states.Context.Runner.onRunnerStop = function() {
-    states.startStopBtn.text("Visualize").prop("disabled", false);
-    states.resetGraphBtn.prop("disabled", false);
-    states.clearGraphBtn.prop("disabled", false);
     states.runnerDuration.text(
       `${states.Context.Runner.duration} ms`
     );
-    states.nextStepBtn.hide();
   };
   states.algoNameDisplay.text(states.Context.Runner.finderName);
-}
-
-function resetGrid() {
-  states.Context.ActiveGrid.resetTraversal();
-  const sn = states.Context.ActiveGrid.startNode;
-  const en = states.Context.ActiveGrid.endNode;
-  sn ? sn.resetText() : null;
-  en ? en.resetText() : null;
 }
 
 function init() {
   var boxSize = states.DEFAULT_BOX_SIZE;
   var [rowCount, columnCount] = Utils.getRowColumnCount(boxSize);
-
-  states.rowCountInput.val(rowCount);
-  states.columnCountInput.val(columnCount);
-  states.boxSizeInput.val(boxSize);
-  states.resetGraphBtn.prop("disabled", true);
-  states.nextStepBtn.hide();
-  states.admissibleValue.val(states.Context.AdmissibleValue);
-  states.admissibleValueDisplay.text(states.Context.AdmissibleValue);
-
-  states.rowCountInput.change(function(event) {
-    rowCount = parseInt($(this).val()) || Math.trunc(states.height / t);
-    processGrid(rowCount, columnCount, states.width, states.height, boxSize);
-  });
-  states.columnCountInput.change(function(event) {
-    columnCount = parseInt($(this).val()) || Math.trunc(states.width / t);
-    processGrid(rowCount, columnCount, states.width, states.height, boxSize);
-  });
-  states.boxSizeInput.change(function(event) {
-    boxSize = parseInt($(this).val());
-    [rowCount, columnCount] = getRowColumnCount(boxSize);
-    processGrid(rowCount, columnCount, states.width, states.height, boxSize);
-  });
   states.toolModeInput.change(function(event) {
     states.Context.ActiveGrid.actionMode = states.TOOL_MODE[this.value];
   });
+
   states.clearGraphBtn.click(function(event) {
     states.Context.Runner.clearGrid();
-    states.startStopBtn.text("Visualize").prop("disabled", false);
-    states.resetGraphBtn.prop("disabled", true);
   });
   states.resetGraphBtn.click(function(event) {
-    resetGrid();
+    states.Context.Runner.resetGrid();
   });
+
+  $('.option_label').click(function(event) {
+    $(this).prev().click();
+  });
+
+  window.onclick = function(event) {
+    // When clicked outside dropdown
+    if (!event.target.matches('.dropdown-button')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+    }
+  }
+
   states.startStopBtn.click(function(event) {
-    states.Context.Runner.init();
-    states.startStopBtn.text("Running..").prop("disabled", true);
-    states.runnerDuration.text("...");
-    states.resetGraphBtn.prop("disabled", true);
-    states.clearGraphBtn.prop("disabled", true);
-  });
-  states.algoSelection.click(function(event) {
-    if (
-      !states.Context.Runner.running ||
-      states.Context.Runner.speed == 0
-    ) {
-      const algo = event.target.dataset["algo"];
-      //const extraData = event.target.dataset;
-      if (
-        states.Context.Runner &&
-        !states.Context.Runner.finish
-      ) {
-        states.Context.Runner.stop();
+    if(states.Context.Runner.FREE && states.Context.ActiveGrid.startNode != null && states.Context.ActiveGrid.endNode != null)
+    {
+      states.Context.Runner.resetGrid();
+      states.Context.Runner.getAlgo();
+      states.Context.Runner.init();
+      states.startStopBtn.text("Visualize").prop("disabled", false);
+      states.runnerDuration.text(states.Context.Runner.duration);
+      if(!states.Context.Runner.running)
+      {
+        states.Context.Runner.onRunnerStop();
       }
-      states.Context.Runner.getAlgo(algo);
-      resetGrid();
-      if (
-        states.Context.ActiveGrid.startNode &&
-        states.Context.ActiveGrid.endNode
-      ) {
-        states.actionPanel.removeClass("invisible");
-      }
-      states.algoNameDisplay.text(states.Context.Runner.finderName);
     }
   });
 

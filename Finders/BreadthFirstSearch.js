@@ -42,7 +42,7 @@ BreadthFirstSearch.prototype.pathFinder = function(startX, startY, endX, endY, g
             //box = graph.getBox(node.y, node.x);
 
         if (end.x == node.x && end.y == node.y)
-        {
+        {   
             var p = new Path();
             p.traceFromEnd(end);
             return(p.path);

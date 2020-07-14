@@ -12,10 +12,11 @@ const states = Object.freeze({
   actionPanel: $(".action-panel"),
   algoSelection: $(".algo-selection"),
   speedSelection: $(".speed-selection"),
+  randomWallGenerator: $(".random-wall-generator"),
   algoNameDisplay: $("#selected-algo-name"),
   speedNameDisplay: $("#selected-speed-name"),
   runnerDuration: $("#runner-duration"),
-  nextStepBtn: $(".next-step"),
+  /*nextStepBtn: $(".next-step"),*/
   admissibleValue: $("#admissible-value"),
   admissibleValueDisplay: $("#admissibleValueDisplay"),
   DEFAULT_RUNNER_CODE: "bfs",
@@ -31,6 +32,12 @@ const states = Object.freeze({
     BOX_TYPE_TRAVERSED_NODE_COLORS: ["#134E5E", "lightgreen"],
     BOX_TYPE_PATH_NODE_COLORS: ["#FF8008", "#FFC837"],
     BOX_TYPE_ERROR_NODE_COLOR: "#6c757d"
+  }),
+  DEFAULT_POS: Object.freeze({
+    START_X:10,
+    START_Y:3,
+    END_X:20,
+    END_Y:6
   }),
   TOOL_MODE: Object.freeze({
     START_NODE: 0,
@@ -54,7 +61,7 @@ const states = Object.freeze({
   }),
   Runners: Object.freeze({
     aStar: AStar,
-    idaStar: IDAStar,
+    idAStar: IDAStar,
     bfs: BreadthFirstSearch,
     idDepthFirst: IDDepthFirstSearch,
     bestFirst: AStar,

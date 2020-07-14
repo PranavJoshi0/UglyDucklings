@@ -112,7 +112,7 @@ class IDDepthFirstSearch
                 foundDest = true;
                 break;
             }
-        }    
+        }
   
         if(foundDest === true)
         {
