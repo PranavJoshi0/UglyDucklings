@@ -13,7 +13,7 @@ function processGrid(rowCount, columnCount, width, height, boxSize) {
       states.Context.ActiveGrid.startNode != null &&
       states.Context.ActiveGrid.endNode != null
     ) {
-      states.randomWallGenerator.prop("disabled", true);
+      //states.randomWallGenerator.prop("disabled", true);
       }
   };
 
@@ -43,7 +43,7 @@ function init() {
     $(this).prev().click();
   });
 
-  window.onclick = function(event) {
+  /*window.onclick = function(event) {
     // When clicked outside dropdown
     if (!event.target.matches('.dropdown-button')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -54,13 +54,22 @@ function init() {
           }
         }
     }
-  }
+  }*/
+
+  function getSpeed() {
+    const runner = states.Context.Runner;
+    const speed = $('input[name="speed-choice"]:checked').val();//event.target.dataset["speed"];
+    runner.speed = states.RunnerSpeeds[speed];
+    states.speedNameDisplay.text(speed);
+  };
 
   states.startStopBtn.click(function(event) {
-    if(states.Context.Runner.FREE && states.Context.ActiveGrid.startNode != null && states.Context.ActiveGrid.endNode != null)
+    if(states.Context.FREE && states.Context.ActiveGrid.startNode != null && states.Context.ActiveGrid.endNode != null)
     {
+      //console.log("WE'RE IN!");
       states.Context.Runner.resetGrid();
       states.Context.Runner.getAlgo();
+      getSpeed();
       states.Context.Runner.init();
       states.startStopBtn.text("Visualize").prop("disabled", false);
       states.runnerDuration.text(states.Context.Runner.duration);
@@ -71,20 +80,13 @@ function init() {
     }
   });
 
-  states.speedSelection.click(function(event) {
-    const runner = states.Context.Runner;
-    const speed = event.target.dataset["speed"];
-    runner.speed(states.RunnerSpeeds[speed]);
-    states.speedNameDisplay.text(speed);
-  });
-
-  states.admissibleValue.change(function(event) {
+  /*states.admissibleValue.change(function(event) {
     if (this.value < 1 || this.value > 100) {
       $(this).val(1);
     }
     states.Context.AdmissibleValue = this.value;
     states.admissibleValueDisplay.text(this.value);
-  });
+  });*/
 
   processGrid(rowCount, columnCount, states.width, states.height, boxSize);
 }

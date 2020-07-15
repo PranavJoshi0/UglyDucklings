@@ -79,7 +79,7 @@ IDAStar.prototype.pathFinder = function(startX, startY, endX, endY, graph)
 
         else
         {
-            currentNode.setAsTraversed();
+            currentNode.isVisited = true;
         }
 
         var neighbors = graph.getNeighbors(currentNode.x, currentNode.y, diagOption),
@@ -97,9 +97,19 @@ IDAStar.prototype.pathFinder = function(startX, startY, endX, endY, graph)
                 isDiag = true;
             }
         
-            gNew = g + (isDiag ? Math.SQRT2 * val : val);
+            var temp = null,
+                gNew = g + (isDiag ? Math.SQRT2 * val : val);
 
-            var temp = search(neighbor, gNew, threshold);
+            if(!neighbor.isVisited)
+            {
+                neighbor.setAsTraversed();//Animate.setTraversed(neighbor);
+                temp = search(neighbor, gNew, threshold);
+            }
+
+            else
+            {
+                continue;
+            }
 
             /*
                 Search() returns a Node object only when the goal has been found
@@ -131,7 +141,7 @@ IDAStar.prototype.pathFinder = function(startX, startY, endX, endY, graph)
     {
         path = [];
 
-        //graph.resetTraversal();
+        graph.resetVisited();
 
         var temp = search(start, 0, threshold);
 

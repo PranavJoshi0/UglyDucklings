@@ -107,6 +107,53 @@ class MinHeap
     }
 };
 
+class Queue
+{
+    constructor()
+    {
+        this.queue  = [];
+        this.startingpt = 0;
+    }
+
+    getLength()
+    {
+        return (this.queue.length - this.startingpt);
+    }
+    
+    isEmpty()
+    {
+        return (this.queue.length == 0);
+    }
+    
+    enqueue(item)
+    {
+        this.queue.push(item);
+    }
+    
+    dequeue()
+    {
+        if (this.queue.length == 0)
+        {
+            return undefined;
+        }
+        
+        var item = this.queue[this.startingpt];
+        
+        if (++this.startingpt * 2 >= this.queue.length)
+        {
+            this.queue  = this.queue.slice(this.startingpt);
+            this.startingpt = 0;
+        }
+        
+        return item;
+    }
+
+    peek()
+    {
+        return (this.queue.length > 0 ? this.queue[this.startingpt] : undefined);
+    }
+}
+
 /*
 openList = new MinHeap();
 openList.insert({f: 0, coord: [4,5]});

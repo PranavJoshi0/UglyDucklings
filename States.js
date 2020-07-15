@@ -9,17 +9,17 @@ const states = Object.freeze({
   startStopBtn: $(".start-stop-btn"),
   width: $("#graph-canvas").width(),
   height: $("#graph-canvas").height(),
-  actionPanel: $(".action-panel"),
+  /*actionPanel: $(".action-panel"),*/
   algoSelection: $(".algo-selection"),
-  speedSelection: $(".speed-selection"),
-  randomWallGenerator: $(".random-wall-generator"),
+  /*speedSelection: $(".speed-selection"),*/
+  /*randomWallGenerator: $(".random-wall-generator"),*/
   algoNameDisplay: $("#selected-algo-name"),
   speedNameDisplay: $("#selected-speed-name"),
   runnerDuration: $("#runner-duration"),
+  currentPathSpeed: 6,
   /*nextStepBtn: $(".next-step"),*/
-  admissibleValue: $("#admissible-value"),
-  admissibleValueDisplay: $("#admissibleValueDisplay"),
-  DEFAULT_RUNNER_CODE: "bfs",
+  /*admissibleValue: $("#admissible-value"),
+  admissibleValueDisplay: $("#admissibleValueDisplay"),*/
   MAX_END_NODE_COUNT: 3,
   MAX_FIXED_FRAME_COUNT: 400,
   DEFAULT_BOX_SIZE: window.innerWidth > 600 ? 30 : 30,
@@ -49,8 +49,8 @@ const states = Object.freeze({
     CLEAR: 1,
     START_NODE: 2,
     END_NODE: 3,
-    TRAVERSED_NODE: 4,
-    PATH_NODE: 5,
+    WEIGHT_NODE: 4,
+    STATION_NODE: 5,
     ERROR_NODE: 6
   }),
   RunnerSpeeds: Object.freeze({
@@ -73,7 +73,9 @@ const states = Object.freeze({
   Context: {
     ActiveGrid: null,
     Runner:null,
-    RunnerSpeed: 0,
-    AdmissibleValue: 1
+    searchQueue: null,
+    pathQueue: null,
+    FREE: true, /*keeps track of whether the runner is free or running*/
+    //AdmissibleValue: 1
   }
 });

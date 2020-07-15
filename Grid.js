@@ -1,6 +1,8 @@
 
-class Box extends Node {
-  constructor(x, y, weight) {
+class Box extends Node
+{
+  constructor(x, y, weight)
+  {
     super(x, y, weight);
     this.pointTL = null;
     this.pointBR = null;
@@ -9,15 +11,18 @@ class Box extends Node {
     this.__centerText = null;
   }
 
-  changeText(text) {
+  changeText(text)
+  {
     this.__centerText.content = `${text}`;
   }
 
-  resetText() {
+  resetText()
+  {
     this.__centerText.content = "";
   }
 
-  setAsStart() {
+  setAsStart()
+  {
     this.nodeType = states.BOX_TYPES.START_NODE;
     this.__path.fillColor = {
       gradient: {
@@ -28,13 +33,16 @@ class Box extends Node {
     };
   }
 
-  removeAsStart() {
-    if (this.nodeType == states.BOX_TYPES.START_NODE) {
+  removeAsStart()
+  {
+    if (this.nodeType == states.BOX_TYPES.START_NODE)
+    {
       this.setAsClear();
     }
   }
 
-  setAsEnd() {
+  setAsEnd()
+  {
     this.nodeType = states.BOX_TYPES.END_NODE;
     this.__path.fillColor = {
       gradient: {
@@ -45,20 +53,23 @@ class Box extends Node {
     };
   }
 
-  removeAsEnd() {
+  removeAsEnd()
+  {
     if (this.nodeType == states.BOX_TYPES.END_NODE) {
       this.setAsClear();
     }
   }
 
-  setAsClear() {
+  setAsClear()
+  {
     this.nodeType = states.BOX_TYPES.CLEAR;
     this.__path.fillColor = states.COLORS.BOX_TYPE_CLEAR_COLOR;
     this.resetText();
     this.weight = 1;
   }
 
-  setAsBlock() {
+  setAsBlock()
+  {
     this.nodeType = states.BOX_TYPES.BLOCK;
     this.path.tween(
       {
@@ -73,8 +84,9 @@ class Box extends Node {
     this.weight = Infinity;
   }
 
-  setAsTraversed() {
-    if(this.nodeType != states.BOX_TYPES.START_NODE || this.nodeType != states.BOX_TYPES.END_NODE)
+  setAsTraversed()
+  {
+    if(this.nodeType != states.BOX_TYPES.START_NODE && this.nodeType != states.BOX_TYPES.END_NODE)
     {
       if (this.nodeType == states.BOX_TYPES.BLOCK)
       {
@@ -84,7 +96,7 @@ class Box extends Node {
       
       else
       {
-        this.nodeType = states.BOX_TYPES.TRAVERSED_NODE;
+        //this.nodeType = states.BOX_TYPES.TRAVERSED_NODE;
         this.path.tween(
           {
             fillColor: states.COLORS.BOX_TYPE_TRAVERSED_NODE_COLORS[0]
@@ -99,11 +111,12 @@ class Box extends Node {
     this.isVisited = true;
   }
 
-  setAsPath() {
-    if(this.nodeType !== states.BOX_TYPES.START_NODE || this.nodeType !== states.BOX_TYPES.END_NODE)
+  setAsPath()
+  {
+    if(this.nodeType !== states.BOX_TYPES.START_NODE && this.nodeType !== states.BOX_TYPES.END_NODE)
     {
-      if (this.nodeType == states.BOX_TYPES.TRAVERSED_NODE) {
-        this.nodeType = states.BOX_TYPES.PATH_NODE;
+      if (this.nodeType == states.BOX_TYPES.CLEAR) {
+        //this.nodeType = states.BOX_TYPES.PATH_NODE;
         this.path.tween(
           {
             fillColor: states.COLORS.BOX_TYPE_PATH_NODE_COLORS[0]
@@ -117,22 +130,23 @@ class Box extends Node {
     }
   }
 
-  resetTraversed() {
-    if (
-      this.nodeType == states.BOX_TYPES.TRAVERSED_NODE ||
-      this.nodeType == states.BOX_TYPES.PATH_NODE
-    ) {
+  resetTraversed()
+  {
+    if (this.nodeType === states.BOX_TYPES.CLEAR)
+    {
       this.setAsClear();
       this.resetVisit();
     }
   }
 
-  setPoints(pointTL, pointBR) {
+  setPoints(pointTL, pointBR)
+  {
     this.pointTL = pointTL;
     this.pointBR = pointBR;
   }
 
-  draw() {
+  draw()
+  {
     this.__path = new paper.Path.Rectangle({
       from: this.pointTL,
       to: this.pointBR,
@@ -148,15 +162,18 @@ class Box extends Node {
     this.__path.addChild(this.__centerText);
   }
 
-  get path() {
+  get path()
+  {
     return this.__path;
   }
 };
 
 
 
-class Grid {
-  constructor(width, height, graph, boxSize) {
+class Grid
+{
+  constructor(width, height, graph, boxSize)
+  {
     this.width = width;
     this.height = height;
     this.graph = graph;
@@ -170,7 +187,8 @@ class Grid {
     this.onStartEndSet = () => {};
   }
 
-  getBoxSideLength() {
+  getBoxSideLength()
+  {
     var area = this.width * this.height;
     var singleBoxArea = area / this.graph.nodeCount;
     var singleBoxSideLength = Math.sqrt(singleBoxArea);
@@ -178,15 +196,18 @@ class Grid {
     return singleBoxSideLength;
   }
 
-  setBlock(r, c) {
-    this.graph.gridOfNodes[r][c].setAsBlock();
+  setBlock(r, c)
+  {
+      this.graph.gridOfNodes[r][c].setAsBlock();
   }
 
-  setClear(r, c) {
-    this.graph.gridOfNodes[r][c].setAsClear();
+  setClear(r, c)
+  {
+      this.graph.gridOfNodes[r][c].setAsClear();
   }
 
-  setStart() {
+  setStart()
+  {
     for (let r = 0; r < this.graph.rowCount; r++) {
       for (let c = 0; c < this.graph.columnCount; c++) {
         this.graph.gridOfNodes[r][c].removeAsStart();
@@ -204,22 +225,52 @@ class Grid {
     this.onStartEndSet();
   }
 
-  fixGrid() {
-    for (let r = 0; r < this.graph.rowCount; r++) {
-      for (let c = 0; c < this.graph.columnCount; c++) {
-        if (
-          this.graph.gridOfNodes[r][c].nodeType == states.BOX_TYPES.BLOCK ||
-          this.graph.gridOfNodes[r][c].nodeType == states.BOX_TYPES.ERROR_NODE
-        ) {
-          this.setBlock(r, c);
-        }
+
+  /*
+    Ensures that everything is as it should be before starting the search
+  */
+
+  fixGrid()
+  {
+    for (let r = 0; r < this.graph.rowCount; r++)
+    {
+      for (let c = 0; c < this.graph.columnCount; c++)
+      {
+        var box = this.getBox(r,c),
+            x = box.nodeType;
+        box.isVisited = false;
+        if(x !== states.BOX_TYPES.START_NODE && x !== states.BOX_TYPES.END_NODE)
+          {
+            if (x == states.BOX_TYPES.BLOCK || x == states.BOX_TYPES.ERROR_NODE)
+            {
+              this.setBlock(r, c);
+            }
+
+            else if(x == states.BOX_TYPES.WEIGHT_NODE)
+            {
+              ;
+            }
+
+            else if(x == states.BOX_TYPES.STATION_NODE)
+            {
+              ;
+            }
+
+            else
+            {
+              this.setClear(r, c);
+            }
+          }
       }
     }
   }
 
-  resetTraversal() {
-    for (let r = 0; r < this.graph.rowCount; r++) {
-      for (let c = 0; c < this.graph.columnCount; c++) {
+  resetTraversal()
+  {
+    for (let r = 0; r < this.graph.rowCount; r++)
+    {
+      for (let c = 0; c < this.graph.columnCount; c++)
+      {
         var box = this.graph.gridOfNodes[r][c];
         box.resetTraversed();
       }
@@ -228,17 +279,22 @@ class Grid {
     this.__wallB = null;
   }
 
-  setEnd() {
-    for (let r = 0; r < this.graph.rowCount; r++) {
-      for (let c = 0; c < this.graph.columnCount; c++) {
+  setEnd()
+  {
+    for (let r = 0; r < this.graph.rowCount; r++)
+    {
+      for (let c = 0; c < this.graph.columnCount; c++)
+      {
         this.graph.gridOfNodes[r][c].removeAsEnd();
       }
     }
-    if (this.__wallB) {
+    if (this.__wallB)
+    {
       this.setBlock(...this.__wallB.value);
       this.__wallB = null;
     }
-    if (this.endNode.nodeType == states.BOX_TYPES.BLOCK) {
+    if (this.endNode.nodeType == states.BOX_TYPES.BLOCK)
+    {
       this.__wallB = this.endNode;
       this.setClear(...this.endNode.value);
     }
@@ -246,31 +302,38 @@ class Grid {
     this.onStartEndSet();
   }
 
-  getBox(r, c) {
+  getBox(r, c)
+  {
     return this.graph.gridOfNodes[r][c];
   }
 
-  set actionMode(mode) {
+  set actionMode(mode)
+  {
     this.__action_mode = mode;
   }
 
-  get actionMode() {
+  get actionMode()
+  {
     return this.__action_mode;
   }
 
-  get boxes() {
+  get boxes()
+  {
     return this.graph.gridOfNodes;
   }
 
-  get boxArea() {
+  get boxArea()
+  {
     return this.graph.gridOfNodes[0][0].path.area;
   }
 
-  get startNode() {
+  get startNode()
+  {
     return this.__start_node;
   }
 
-  get endNode() {
+  get endNode()
+  {
     return this.__end_node;
   }
 }

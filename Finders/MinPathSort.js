@@ -125,8 +125,10 @@ MinPathSort.prototype.buildPath = function(maxCost, graph)
     for(i = 0; i <= lastInter; i++)
     {  
         var path = (i === lastInter) ? 
-                   this.searchAlgo.pathFinder(this.route[i].x, this.route[i].y, this.route[i + 1].x, this.route[i + 1].y, graph, 'a-star', color = false) :
-                   this.searchAlgo.pathFinder(this.route[i].x, this.route[i].y, this.route[l - 1].x, this.route[l - 1].y, graph, 'a-star', color = false);
+                   this.searchAlgo.pathFinder(this.route[i].x, this.route[i].y, this.route[i + 1].x, this.route[i + 1].y,
+                                                graph, 'a-star', color = false) :
+                   this.searchAlgo.pathFinder(this.route[i].x, this.route[i].y, this.route[l - 1].x, this.route[l - 1].y,
+                                                graph, 'a-star', color = false);
         
         for(j = 0; j < path.length; j++)
         {

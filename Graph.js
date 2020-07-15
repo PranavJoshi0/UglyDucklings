@@ -82,6 +82,19 @@ class Graph {
     this.gridOfNodes[y][x].isVisited = true;
   }
 
+  resetVisited()
+  {
+    var i, j;
+
+    for (i = 0; i < this.rowCount; i++)
+    {
+      for (j = 0; j < this.columnCount; j++)
+      {
+        this.gridOfNodes[i][j].resetVisit();       
+      }
+    }
+  }
+
   resetDefault() {
     var i, j;
 

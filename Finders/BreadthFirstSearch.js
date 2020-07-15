@@ -25,15 +25,13 @@ function BreadthFirstSearch(options)
 
 BreadthFirstSearch.prototype.pathFinder = function(startX, startY, endX, endY, graph)
 {
-    //graph.resetTraversal();
-
     var openList = [],
         start = graph.getNodeAt(startX, startY),
         end = graph.getNodeAt(endX, endY),
         diagOption = this.diagonalOption,
         neighbors = [];
 
-    //start.isVisited = true;
+    start.isVisited = true;
     openList.push(start);
 
     while (openList.length)
@@ -43,6 +41,7 @@ BreadthFirstSearch.prototype.pathFinder = function(startX, startY, endX, endY, g
 
         if (end.x == node.x && end.y == node.y)
         {   
+            end.setAsEnd();
             var p = new Path();
             p.traceFromEnd(end);
             return(p.path);
@@ -50,7 +49,7 @@ BreadthFirstSearch.prototype.pathFinder = function(startX, startY, endX, endY, g
 
         else
         {
-            node.setAsTraversed();
+            node.isVisited = true;
         }
 
         neighbors = graph.getNeighbors(node.x, node.y, diagOption);
@@ -59,15 +58,14 @@ BreadthFirstSearch.prototype.pathFinder = function(startX, startY, endX, endY, g
             if (!neighbors[i].isVisited)
             {
                 neighbors[i].isVisited = true;
-                openList.push(neighbors[i]);
                 neighbors[i].parent = node;
+                if(neighbors[i].nodeType != states.BOX_TYPES.END_NODE)
+                neighbors[i].setAsTraversed();
+                openList.push(neighbors[i]);
             }
         }
     }
 
     return [];
 };
-
-//module.exports = BreadthFirstSearch;
-
 

@@ -170,9 +170,9 @@ footer {
 }
 
 /* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-  display: none;
-  position: absolute;
+.speed-box {
+  display: block;
+  position: fixed;
   align-self: center;
   color: rgb(201, 201, 201);
   background-color: #0e0e0ed0;

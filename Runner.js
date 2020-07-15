@@ -8,7 +8,6 @@ class Runner
         this.path = [];
         this.timer = null;
         this.fixedTimer = null;
-        this.FREE = true;
         this.count = 0;
         this.__speed = 0; // 0 = Max Speed
         this.onStop = null;
@@ -83,7 +82,7 @@ class Runner
                 weight = parseInt($('#astar_section .spinner').val()) || 1;
                 weight = weight >= 1 ? weight : 1; if negative or 0, use 1 */
 
-                heuristic = $('input[name=a_star_heuristic]:checked').val();
+                heuristic = $('input[name="a_star_heuristic"]:checked').val();
                 if (biDirectional)
                 {
                     finder = new states.Runners['biAStar']({
@@ -113,7 +112,7 @@ class Runner
                 /*trackRecursion = typeof $('#ida_star_list ' +
                                          '.track_recursion:checked').val() !== 'undefined';*/
 
-                heuristic = $('input[name=jump_point_heuristic]:checked').val();
+                heuristic = $('input[name="idastar_heuristic"]:checked').val();
 
                 /*weight = parseInt($('#ida_section input[name=astar_weight]').val()) || 1;
                 weight = weight >= 1 ? weight : 1; if negative or 0, use 1 
@@ -201,7 +200,7 @@ class Runner
                 dontCrossCorners = typeof $('#best_first_list ' +
                                          '.dont_cross_corners:checked').val() !=='undefined';
             
-                heuristic = $('input[name=bestfirst_heuristic]:checked').val();
+                heuristic = $('input[name="best_first_heuristic"]:checked').val();
                 
                 if (biDirectional)
                 {
@@ -292,7 +291,7 @@ class Runner
                 dontCrossCorners = typeof $('#multi_stop_list ' +
                                          '.dont_cross_corners:checked').val() !=='undefined';
                     
-                heuristic = $('input[name=multistop_heuristic]:checked').val();
+                heuristic = $('input[name="multi_stop_heuristic"]:checked').val();
 
                 maxCost = parseInt($('#multi_stop_list input[name=max_cost]').val()) || Infinity;
                 maxCost = maxCost >= 0 ? maxCost : Infinity;
@@ -318,22 +317,25 @@ class Runner
         //console.log("allowDiagonal" + allowDiagonal + " dontCrossCorners" + dontCrossCorners + " heuristic" + heuristic + " biDirectional" + biDirectional);
     }
 
-    mapPath(path)
+    mapPath(L)
     {
-        this.path = [];
-        for(var i = 0; i < path.length; i++)
+        var box = this.grid.getBox(this.path[L][1], this.path[L][0]);
+        box.setAsPath();
+        if(L > 1)
         {
-            var box = this.grid.getBox(path[i][1], path[i][0]);
-            this.path.push(box);
+            setTimeout(() => this.mapPath(L-1), this.__speed);
         }
-
-        this.grid.endNode.changeText(this.path.length);
+        states.Context.FREE = true;
+        this.stop();
+        //this.grid.endNode.changeText(this.path.length);
         this.count = this.path.length;
     }
 
     runAlgo()
     {
-        console.log("Running..."+this.finderName);
+        states.Context.searchQueue = new Queue();
+        states.Context.pathQueue = new Queue();
+        console.log("Running... "+this.finderName);
         var start = this.grid.startNode,
             end = this.grid.endNode,
             path = [];
@@ -342,71 +344,55 @@ class Runner
         {
             var algoName = this.finderName === "Best First Search" ? 'best-first-search' :
                            (this.finderName === "Dijkstra" ? 'dijkstra' : 'a-star');
+            this.__startTime = new Date().getTime();
             path = this.finder.pathFinder(start.x, start.y, end.x, end.y, this.grid.graph, algoName, true);
         }
 
         else if(this.finder instanceof IDDepthFirstSearch)
         {
+            this.__startTime = new Date().getTime();
             path = this.finder.pathFinder(start.x, start.y, end.x, end.y, this.grid);
         }
 
         else if(this.finder instanceof MultipleStops)
         {
+            this.__startTime = new Date().getTime();
             path = this.finder.pathFinder(this.grid);
         }
 
         else
         {
+            this.__startTime = new Date().getTime();
             path = this.finder.pathFinder(start.x, start.y, end.x, end.y, this.grid.graph);
         }
-        this.done();
-        this.mapPath(path);
-        this.resetStartEnd();
+
+        this.path = path;
+        if(path.length - 2 > 0)
+        {
+            this.mapPath(path.length - 2);
+        }
     }
 
     init()
     {
+        //console.log("ENTERED HERE");
         this.grid.fixGrid();
         this.onStop = this.onRunnerStop();
-        this.FREE = false;
-        this.__startTime = new Date().getTime();
+        states.Context.FREE = false;
+        //this.__startTime = new Date().getTime();
         this.runAlgo();
-        if (this.FREE)
+        if (states.Context.FREE)
         {
-            this.fixedRecall();
+            if (!this.count)
+            {
+                this.onStop ? this.onStop() : null;
+                alert("Oops! Looks like there's no way to reach the destination!");
+            }
             return;
         }
     }
     
-    fixedRecall()
-    {
-        if (!this.count)
-        {
-            this.onStop ? this.onStop() : null;
-        }
-        
-        var i = this.count > states.MAX_FIXED_FRAME_COUNT ? 
-            states.MAX_FIXED_FRAME_COUNT : 
-            this.count;
-        this.path.shift();
-        
-        this.fixedTimer = setInterval(() => {
-            if (i > 1)
-            {
-                var node = this.path.shift();
-                node.setAsPath();
-                i--;
-            }
-            
-            else
-            {
-                clearInterval(this.fixedTimer);
-                this.fixedTimer = null;
-                this.onStop ? this.onStop() : null;
-            }
-        }, this.__speed);
-    }
-
+    
     perform(r, c)
     {
         var box = this.grid.getBox(r, c);
@@ -445,8 +431,8 @@ class Runner
                 case states.TOOL_MODE.WALL_NODES:
                     if (box == this.grid.__start_node ||
                         box == this.grid.__end_node ||
-                        box.nodeType == states.BOX_TYPES.TRAVERSED_NODE ||
-                        box.nodeType == states.BOX_TYPES.PATH_NODE)
+                        box.nodeType == states.BOX_TYPES.WEIGHT_NODE ||
+                        box.nodeType == states.BOX_TYPES.STATION_NODE)
                     {
                         return;
                     }
@@ -512,12 +498,16 @@ class Runner
             heuristic: this.Heuristic.Octile()
         });
 
+        this.finderName = "A-Star";
+
+        console.log("SET THE DEAFULT... "+this.finderName);
+
         this.setDefaultStartEnd();
     }
 
     resetGrid()
     {
-        if(this.FREE)
+        if(states.Context.FREE)
         {
             this.grid.resetTraversal();
             const sn = this.grid.startNode;
@@ -530,7 +520,7 @@ class Runner
 
     clearGrid()
     {
-        if(this.FREE)
+        if(states.Context.FREE)
         {
             this.grid.graph.resetDefault();
             for (var r = 0; r < this.grid.graph.rowCount; r++)
@@ -548,13 +538,13 @@ class Runner
 
     resume()
     {
-        this.FREE = false;
+        states.Context.FREE = false;
         this.recall();
     }
     
     done()
     {
-        this.FREE = true;
+        states.Context.FREE = true;
         this.stop();
     }
     
@@ -583,6 +573,6 @@ class Runner
     
     get duration()
     {
-        return this.FREE ? this.__endTime - this.__startTime : 0;
+        return states.Context.FREE ? this.__endTime - this.__startTime : 0;
     }
 };

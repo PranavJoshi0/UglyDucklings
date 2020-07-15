@@ -1,7 +1,3 @@
-//var MinHeap = require('./MinHeap');
-//var Path = require('./Path');
-//var Heuristic = require('./Heuristic');
-//var DiagonalOptions = require('./DiagonalOptions');
 
 class AStar
 {
@@ -33,8 +29,6 @@ class AStar
 
 pathFinder(startX, startY, endX, endY, graph, algo = 'a-star', color = true)
 {
-    //graph.resetTraversal();
-
     var start = graph.getNodeAt(startX, startY),
         end = graph.getNodeAt(endX, endY),
         diagOption = this.diagonalOption,
@@ -70,8 +64,8 @@ pathFinder(startX, startY, endX, endY, graph, algo = 'a-star', color = true)
             neighbors = graph.getNeighbors(currentX, currentY, diagOption),
             neighbor, i, gNew, hNew, fNew;
 
-        console.log("MinPopped");
-        console.log(minElement);
+        /*console.log("MinPopped");
+        console.log(minElement);*/
 
         closedList[currentY][currentX] = true;
 
@@ -120,7 +114,7 @@ pathFinder(startX, startY, endX, endY, graph, algo = 'a-star', color = true)
                     neighbor.isVisited = true;
                     if(color === true) //color the node only when we want to show the search
                     {
-                        neighbor.setAsTraversed();
+                        neighbor.setAsTraversed();//Animate.setTraversed(neighbor);
                     }
                     neighbor.f = fNew;
                     neighbor.g = gNew;
@@ -132,5 +126,3 @@ pathFinder(startX, startY, endX, endY, graph, algo = 'a-star', color = true)
     }
     return [];
 }};
-
-//module.exports = AStar;

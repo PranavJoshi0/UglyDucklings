@@ -6,7 +6,7 @@ class Node {
 
     this.weight = weight;
 
-    this.isVisited = false; //check this again
+    this.isVisited = false;
 
     this.parent = null;
   }
@@ -20,10 +20,4 @@ class Node {
     this.isVisited = false;
     this.parent = null;
   }
-
-  /*setParent(parent) {
-    this.parent = parent;
-  }*/
 }
-
-//module.exports = Node;

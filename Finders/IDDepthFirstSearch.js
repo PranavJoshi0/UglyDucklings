@@ -9,9 +9,6 @@ increasing depth: first one, then two, and so on until the goal is found. We can
 with a depth equal to the straight-line distance from the start to the goal. This search is 
 asymptotically optimal among brute force searches in both space and time.
 */
-//var DiagonalOptions = require('./DiagonalOptions');
-//var Heuristic = require('./Heuristic');
-//var Path = require('./Path');
 
 class IDDepthFirstSearch
 {
@@ -35,63 +32,6 @@ class IDDepthFirstSearch
         }
     }
 
-    DLS(start, end, graph, depthLimit, diagOption)
-    {
-        //var box = activeGrid.getBox(start.y, start.x);
-
-        //start.isVisited = true;
-
-        if(start === end)
-        {
-            return true;
-        }
-
-        else
-        {
-            start.setAsTraversed();
-        }
-
-        if(depthLimit <= 0)
-        {
-            return false;
-        }
-
-        var neighbors = graph.getNeighbors(start.x, start.y, diagOption), i;
-
-        for(i = 0; i < neighbors.length; i++)
-        {
-            var neighbor = neighbors[i],
-                isDiag = false;
-        
-            if(neighbor.x !== start.x && neighbor.y !== start.y)
-            {
-                isDiag = true;
-            }
-        
-            var val = (neighbor.weight + start.weight) / 2.0,
-                newDist = start.dist + isDiag ? Math.SQRT2 * val : val;
-
-            if(neighbor.isVisited && newDist < neighbor.dist)
-            {
-                neighbor.parent = start;
-                neighbor.dist = newDist;
-                neighbor.isVisited = false;
-            }
-        
-            if(!neighbor.isVisited)
-            {
-                neighbor.parent = start;
-                neighbor.dist = newDist;
-
-                if(this.DLS(neighbor, end, graph, depthLimit - 1, diagOption) === true)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     pathFinder(startX, startY, endX, endY, activeGrid)
     {
         var graph = activeGrid.graph,
@@ -104,10 +44,68 @@ class IDDepthFirstSearch
             maxDepth = graph.rowCount * graph.columnCount,
             foundDest = false;
 
+        var DLS = function(start, graph, depthLimit)
+        {
+            //var box = activeGrid.getBox(start.y, start.x);
+    
+            //start.isVisited = true;
+    
+            if(start === end)
+            {
+                return true;
+            }
+    
+            else
+            {
+                start.isVisited = true;
+            }
+    
+            if(depthLimit <= 0)
+            {
+                return false;
+            }
+    
+            var neighbors = graph.getNeighbors(start.x, start.y, diagOption), i;
+    
+            for(i = 0; i < neighbors.length; i++)
+            {
+                var neighbor = neighbors[i],
+                    isDiag = false;
+            
+                if(neighbor.x !== start.x && neighbor.y !== start.y)
+                {
+                    isDiag = true;
+                }
+            
+                var val = (neighbor.weight + start.weight) / 2.0,
+                    newDist = start.dist + isDiag ? Math.SQRT2 * val : val;
+    
+                if(neighbor.isVisited && newDist < neighbor.dist)
+                {
+                    neighbor.parent = start;
+                    neighbor.dist = newDist;
+                    neighbor.isVisited = false;
+                }
+            
+                if(!neighbor.isVisited)
+                {
+                    neighbor.setAsTraversed();//Animate.setTraversed(neighbor);
+                    neighbor.parent = start;
+                    neighbor.dist = newDist;
+    
+                    if(DLS(neighbor, graph, depthLimit - 1) === true)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        };
+
         for (;depth <= maxDepth; depth++) 
         {
             activeGrid.resetTraversal();
-            if (this.DLS(start, end, graph, depth, diagOption) === true)
+            if (DLS(start, graph, depth) === true)
             {
                 foundDest = true;
                 break;
@@ -127,5 +125,3 @@ class IDDepthFirstSearch
         }
     }
 };
-
-//module.exports = IDDepthFirstSearch;

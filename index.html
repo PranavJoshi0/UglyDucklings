@@ -15,16 +15,12 @@
          name="keywords"
          content="Path, Visualizer, Pathfinding, PathFinder, Algorithm, graph, GraphAlgorithm,"
          />
-      <meta name="author" content="Gowri Jayaprakash" />
+      <meta name="author" content="Ugly Ducklings" />
       <link rel="shortcut icon" href="src/assets/logo.png" type="image/x-icon" />
+      <script type="text/javascript" src="./lib/ui/jquery.ui.accordion.min.js"></script>
+      <script type="text/javascript" src="./lib/ui/jquery.ui.slider.min.js"></script>
 
-      <!-- HERE -->
-    <script type="text/javascript" src="./lib/ui/jquery.ui.accordion.min.js"></script>
-    <script type="text/javascript" src="./lib/ui/jquery.ui.slider.min.js"></script>
-
-      <!-- TO HERE-->
-
-    </style>
+      <!--</style>-->
       <!-- font awesome -->
       <link
          rel="stylesheet"
@@ -54,11 +50,6 @@
         <nav class="navbar navbar-expand-lg navbar-inverse navbar-light bg-light py-0 sticky-top" >
             <a class="navbar-brand d-flex text-black">
                <!-- Codess 2020-->  &nbsp;
-               <!--<div class="d-none action-panel d-lg-none ">
-                  <button class="btn btn-warning btn-block btn-sm start-stop-btn">
-                  Visualize
-                  </button>
-               </div>-->
             </a>
                 <div class="d-flex row justify-content-start px-0" id="navbar">
                         <div class="pb-0 p-2">
@@ -110,53 +101,29 @@
                                     </label>
                                 </div>
                         </div>
-                        
-                        <!--<div class=" pb-0 p-0 mt-md-1">
-                            <button
-                            class="btn random-wall-generator"
-                            onclick="RandomGrid()"
-                            id="fill-block"
-                            title="Create Random Walls"
-                            >-->
-                    
-                                <!--<i class="fa fa-square-o text-white"></i>Random Walls
-                        </button>-->
-                            <!--<div class="dropdown-menu dropdown-content" aria-labelledby="fill-block">
-                                <a class="dropdown-item disabled" onclick="RandomGrid()"
-                                    >Random Grid</a>
-                            </div>
-                        </div>-->
-                  
-                        <div class="dropdown pb-0 p-0 dropdown_btn" style="width: 120px;">
-                            <a
-                            class="nav-link dropdown-toggle text-info"
-                            id="speed-choice"
-                            role="button"
-                            data-toggle="dropdown"
-                            title="Change Speed"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                            >
-                                <i class="fa fa-square-o text-white"></i> Speed
-                            </a>
-                            <div class="dropdown-menu dropdown-content" aria-labelledby="speed-choice">
-                                <a class="dropdown-item speed-selection" data-speed="Fast">
-                                    Fast
-                                </a>
-                                <a class="dropdown-item speed-selection" data-speed="Medium">
-                                    Medium
-                                </a>
-                                <a class="dropdown-item speed-selection" data-speed="Slow">
-                                    Slow
-                                </a>
-                            </div>
+            
+                     <div class="panel-default">
+                        <div class="panel-heading">
+                           <h5 class="panel-title">
+                              <button id="speed-selection" class="btn btn-info" style="padding: 3px; margin-top:7px;"data-toggle="collapse" data-target="#speed-choice" aria-expanded="false">
+                                 Speed Selection
+                              </button>
+                           </h5>
                         </div>
+                        <div id="speed-choice" class=" panel-collapse collapse collapse in" style="position:absolute; background:rgba(0, 0, 0, 0.863); color: rgb(255, 255, 255); width: 145px; border-radius: 8px;" collapsed="true" data-parent="#speed-selection">
+                           <div class="panel-body">
+                               <input type="radio" name="speed-choice" value="Fast" checked />
+                               <label class="option_label">Fast</label> <br>
+                               <input type="radio" name="speed-choice" value="Medium"/>
+                               <label class="option_label">Medium</label> <br>
+                               <input type="radio" name="speed-choice" value="Slow"/>
+                               <label class="option_label">Slow</label> <br>
+                           </div>
+                        </div>
+                     </div>
 
-                  <!--<section class="container-fluid bg-light">
-                     <section id="toolbar">-->
-                        <!--<div class="d-flex row justify-content-start px-2">-->
-                    
-                           <!-- algorithm name display and clear graph btn -->
+                        
+                        <!-- algorithm name display and clear graph btn -->
                         
                     <div class="pb-0 p-2 d-flex justify-content-center align-items-center">
                         <small class="mx-auto">
@@ -184,16 +151,9 @@
                             Clear Graph
                         </button>
                     </div>
-                        <!--</div>-->
                 </div>
-
-                     <!--</section>
-                  </section>-->
-      
-            <!--</ul>-->
          </nav>
 
-         <!-- HERE -->
          
 
          <div class="panel-group panel right_panel accordion" id="algorithm_panel" draggable="true" title="Select Algorithm">
@@ -206,8 +166,7 @@
                     </div>
                    <div class="panel-collapse collapse collapse in" id="iddfs_list" data-parent="#algorithm_panel">
                       <div class="panel-body">
-                         <!--<a class="dropdown-item dropdown-toggle"
-                            >--><h5>Options</h5>
+                              <h5>Options</h5>
                          <div class="optional sub_options radioLeft">
                                <input type="checkbox" class="allow_diagonal" checked>
                                <label class="option_label">Allow Diagonal</label> <br>
@@ -229,8 +188,7 @@
                     </div>
                    <div class="panel-collapse collapse collapse in" id="bfs_list" data-parent="#algorithm_panel">
                       <div class="panel-body">
-                         <!--<a class="dropdown-item dropdown-toggle"
-                            >--><h5>Options</h5>
+                              <h5>Options</h5>
                          <div class="optional sub_options radioLeft">
                                <input type="checkbox" class="allow_diagonal" checked>
                                <label class="option_label">Allow Diagonal</label> <br>
@@ -252,8 +210,7 @@
                     </div>
                    <div class="panel-collapse collapse collapse in" id="best_first_list" data-parent="#algorithm_panel">
                       <div class="panel-body">
-                         <!--<a class="dropdown-item dropdown-toggle"
-                            >--><h5>Options</h5>
+                              <h5>Options</h5>
                          <div class="optional sub_options radioLeft">
                                <input type="checkbox" class="allow_diagonal" checked>
                                <label class="option_label">Allow Diagonal</label> <br>
@@ -262,20 +219,17 @@
                                <input type="checkbox" class="dont_cross_corners">
                                <label class="option_label">Don't Cross Corners</label> <br>
                          </div>
-                         <!--<div class="dropdown-submenu panel-heading">-->
-                         <!--<a class="dropdown-item dropdown-toggle"
-                            >--><h5>Heuristic</h5>
+                              <h5>Heuristic</h5>
                          <div id="best_first_heuristic" class="sub_options radioLeft">
-                               <input type="radio" name="astar_heuristic" value="manhattan" checked />
+                               <input type="radio" name="best_first_heuristic" value="manhattan" checked />
                                <label class="option_label">Manhattan</label> <br>
-                               <input type="radio" name="astar_heuristic" value="euclidean"/>
+                               <input type="radio" name="best_first_heuristic" value="euclidean"/>
                                <label class="option_label">Euclidean</label> <br>
-                               <input type="radio" name="astar_heuristic" value="octile"/>
+                               <input type="radio" name="best_first_heuristic" value="octile"/>
                                <label class="option_label">Octile</label> <br>
-                               <input type="radio" name="astar_heuristic" value="chebyshev"/>
+                               <input type="radio" name="best_first_heuristic" value="chebyshev"/>
                                <label class="option_label">Chebyshev</label> <br>
                          </div>
-                              <!--</li>-->
                       </div>
                    </div>
                 </div>
@@ -283,14 +237,13 @@
                 <div class="panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                        <a type="button" class="btn btn-block dropbtn algo-selection" data-toggle="collapse" data-algo="aStar" data-target="#a_star_list" aria-expanded="false">
+                        <a type="button" class="btn btn-block dropbtn algo-selection" data-toggle="collapse" data-algo="aStar" data-target="#a_star_list" aria-expanded="true">
                            A-Star
                         </a></h4>
                     </div>
                    <div class="panel-collapse collapse collapse in" id="a_star_list" data-parent="#algorithm_panel">
                       <div class="panel-body">
-                         <!--<a class="dropdown-item dropdown-toggle"
-                            >--><h5>Options</h5>
+                              <h5>Options</h5>
                          <div class="optional sub_options radioLeft">
                                <input type="checkbox" class="allow_diagonal" checked>
                                <label class="option_label">Allow Diagonal</label> <br>
@@ -299,20 +252,17 @@
                                <input type="checkbox" class="dont_cross_corners">
                                <label class="option_label">Don't Cross Corners</label> <br>
                          </div>
-                            <!--<div class="dropdown-submenu panel-heading">-->
-                         <!--<a class="dropdown-item dropdown-toggle"
-                            >--><h5>Heuristic</h5>
+                              <h5>Heuristic</h5>
                          <div id="a_star_heuristic" class="sub_options radioLeft">
-                               <input type="radio" name="astar_heuristic" value="manhattan" checked />
+                               <input type="radio" name="a_star_heuristic" value="manhattan" checked />
                                <label class="option_label">Manhattan</label> <br>
-                               <input type="radio" name="astar_heuristic" value="euclidean"/>
+                               <input type="radio" name="a_star_heuristic" value="euclidean"/>
                                <label class="option_label">Euclidean</label> <br>
-                               <input type="radio" name="astar_heuristic" value="octile"/>
+                               <input type="radio" name="a_star_heuristic" value="octile"/>
                                <label class="option_label">Octile</label> <br>
-                               <input type="radio" name="astar_heuristic" value="chebyshev"/>
+                               <input type="radio" name="a_star_heuristic" value="chebyshev"/>
                                <label class="option_label">Chebyshev</label> <br>
                          </div>
-                            <!--</li>-->
                       </div>
                    </div>
                 </div>
@@ -326,8 +276,7 @@
                     </div>
                    <div class="panel-collapse collapse collapse in" id="multi_stop_list" data-parent="#algorithm_panel">
                       <div class="panel-body">
-                         <!--<a class="dropdown-item dropdown-toggle"
-                            >--><h5>Options</h5>
+                              <h5>Options</h5>
                          <div class="optional sub_options radioLeft">
                                <input type="checkbox" class="allow_diagonal" checked>
                                <label class="option_label">Allow Diagonal</label> <br>
@@ -338,20 +287,17 @@
                                <input class="spinner" name="max_cost">
                                <label class="option_label">Maximum Cost (>= Actual Cost incurred)</label>
                          </div>
-                            <!--<div class="dropdown-submenu panel-heading">-->
-                         <!--<a class="dropdown-item dropdown-toggle"
-                            >--><h5>Heuristic</h5>
+                              <h5>Heuristic</h5>
                          <div id="multi_stop_heuristic" class="sub_options radioLeft">
-                               <input type="radio" name="astar_heuristic" value="manhattan" checked />
+                               <input type="radio" name="multi_stop_heuristic" value="manhattan" checked />
                                <label class="option_label">Manhattan</label> <br>
-                               <input type="radio" name="astar_heuristic" value="euclidean"/>
+                               <input type="radio" name="multi_stop_heuristic" value="euclidean"/>
                                <label class="option_label">Euclidean</label> <br>
-                               <input type="radio" name="astar_heuristic" value="octile"/>
+                               <input type="radio" name="multi_stop_heuristic" value="octile"/>
                                <label class="option_label">Octile</label> <br>
-                               <input type="radio" name="astar_heuristic" value="chebyshev"/>
+                               <input type="radio" name="multi_stop_heuristic" value="chebyshev"/>
                                <label class="option_label">Chebyshev</label> <br>
                          </div>
-                            <!--</li>-->
                       </div>
                    </div>
                 </div>
@@ -365,8 +311,7 @@
                     </div>
                    <div class="panel-collapse collapse collapse in" id="ida_star_list" data-parent="#algorithm_panel">
                       <div class="panel-body">
-                         <!--<a class="dropdown-item dropdown-toggle"
-                            >--><h5>Options</h5>
+                              <h5>Options</h5>
                          <div class="optional sub_options radioLeft">
                                <input type="checkbox" class="allow_diagonal" checked>
                                <label class="option_label">Allow Diagonal</label> <br>
@@ -375,20 +320,17 @@
                                <input type="checkbox" class="dont_cross_corners">
                                <label class="option_label">Don't Cross Corners</label> <br>
                          </div>
-                            <!--<div class="dropdown-submenu panel-heading">-->
-                         <!--<a class="dropdown-item dropdown-toggle"
-                            >--><h5>Heuristic</h5>
+                              <h5>Heuristic</h5>
                          <div id="idastar_heuristic" class="sub_options radioLeft">
-                               <input type="radio" name="astar_heuristic" value="manhattan" checked />
+                               <input type="radio" name="idastar_heuristic" value="manhattan" checked />
                                <label class="option_label">Manhattan</label> <br>
-                               <input type="radio" name="astar_heuristic" value="euclidean"/>
+                               <input type="radio" name="idastar_heuristic" value="euclidean"/>
                                <label class="option_label">Euclidean</label> <br>
-                               <input type="radio" name="astar_heuristic" value="octile"/>
+                               <input type="radio" name="idastar_heuristic" value="octile"/>
                                <label class="option_label">Octile</label> <br>
-                               <input type="radio" name="astar_heuristic" value="chebyshev"/>
+                               <input type="radio" name="idastar_heuristic" value="chebyshev"/>
                                <label class="option_label">Chebyshev</label> <br>
                          </div>
-                            <!--</li>-->
                       </div>
                    </div>
                 </div>
@@ -415,21 +357,15 @@
                       </div>
                    </div>
                 </div>
-                <!--<div class="nav-item d-none mt-md-0 py-1 action-panel mx-auto">-->
-                        <!--<div class="d-none d-md-block">
-                            <button class="btn btn-warning btn-block btn-lg px-5 start-stop-btn">
-                                Visualize
-                            </button>
-                        </div>-->
-                        <button class="btn-block btn-warning start-stop-btn">Visualize</button> 
-                <!--</div>-->
-            </div>
 
-            <!-- TO HERE -->
+              <button class="btn-block btn-warning start-stop-btn">Visualize</button> 
+
+            </div>
 
             <section class="graph d-flex justify-content-center row" id="grid">
                 <canvas id="graph-canvas" resize></canvas>
              </section>
+
        </section>
        <!-- Optional JavaScript -->
        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -454,7 +390,7 @@
        <script src="DiagonalOptions.js"></script>
        <script src="Heuristic.js"></script>
        <script src="Path.js"></script>
-       <script src="MinHeap.js"></script>
+       <script src="DataStructures.js"></script>
        <script src="utilities.js"></script>
        <script src="Finders/AStar.js"></script>
        <script src="Finders/IDAStar.js"></script>
